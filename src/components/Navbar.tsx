@@ -14,8 +14,9 @@ export default function Navbar() {
         </nav>
       ) : (
         <nav>
-          <Link href='/sign-in'>Sign In</Link>{' '}
-          <Link href='/sign-up'>Sign Up</Link>
+          <Link href='/'>Home</Link>{' '}
+          <Link href='/custom-flows/sign-in'>Sign In</Link>{' '}
+          <Link href='/custom-flows/sign-up'>Sign Up</Link>
         </nav>
       )}
     </div>
