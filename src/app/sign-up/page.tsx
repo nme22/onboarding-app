@@ -59,7 +59,7 @@ export default function Page() {
         await setActive({ session: completeSignUp.createdSessionId });
 
         // redirect user
-        router.push('/');
+        router.push('/dashboard');
       }
     } catch (err) {
       // See https://clerk.com/docs/custom-flows/error-handling for more on error handling
