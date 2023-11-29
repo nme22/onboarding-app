@@ -22,7 +22,7 @@ export default function Page() {
         emailAddress: email,
       });
 
-      // Start the verification - a SMS message will be sent to the
+      // Start the verification - a Email message will be sent to the
       // number with a one-time code
       await signUp.prepareEmailAddressVerification();
 
@@ -31,6 +31,7 @@ export default function Page() {
     } catch (err) {
       // See https://clerk.com/docs/custom-flows/error-handling for more on error handling
       console.error('Error:', JSON.stringify(err, null, 2));
+      window.alert('YO THIS EMAIL TAKEN. PICK A DIFFERENT EMAIL!');
     }
   }
 
@@ -49,6 +50,8 @@ export default function Page() {
       // Once your Instance is setup this should not be required.
       if (completeSignUp.status !== 'complete') {
         console.error(JSON.stringify(completeSignUp, null, 2));
+        //This is where the custom flow is failing
+        console.log("Something didn't go as planned");
       }
 
       // If verification was completed, create a session for the user
@@ -56,7 +59,7 @@ export default function Page() {
         await setActive({ session: completeSignUp.createdSessionId });
 
         // redirect user
-        router.push('/dashboard');
+        router.push('/');
       }
     } catch (err) {
       // See https://clerk.com/docs/custom-flows/error-handling for more on error handling
@@ -81,7 +84,7 @@ export default function Page() {
 
   return (
     <form onSubmit={handleSubmit}>
-      <label id='email'>Phone</label>
+      <label id='email'>Email:</label>
       <input
         value={email}
         id='email'
