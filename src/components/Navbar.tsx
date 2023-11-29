@@ -4,6 +4,7 @@ import { SignOutButton, UserButton, auth } from '@clerk/nextjs';
 
 export default function Navbar() {
   const { userId } = auth();
+  console.log(auth());
 
   return (
     <div className='font-bold text-lg'>
