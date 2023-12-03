@@ -8,6 +8,7 @@ export default function Page() {
   const { isLoaded, signUp, setActive } = useSignUp();
   const [verifying, setVerifying] = React.useState(false);
   const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
   const [code, setCode] = React.useState('');
   const router = useRouter();
 
@@ -17,13 +18,14 @@ export default function Page() {
     if (!isLoaded && !signUp) return null;
 
     try {
-      // Start the Sign Up process using the phone number method
+      // Start the Sign Up process using the email address method
       await signUp.create({
         emailAddress: email,
+        password,
       });
 
-      // Start the verification - a Email message will be sent to the
-      // number with a one-time code
+      // Start the verification - a message will be sent to the
+      // email with a one-time code
       await signUp.prepareEmailAddressVerification();
 
       // Set 'verifying' true to display second form and capture the OTP code
@@ -77,22 +79,38 @@ export default function Page() {
           name='code'
           onChange={(e) => setCode(e.target.value)}
         />
-        <button type='submit'>Verify</button>
+        <button type='submit'>Complete your sign up</button>
       </form>
     );
   }
 
   return (
     <form onSubmit={handleSubmit}>
-      <label id='email'>Email:</label>
-      <input
-        value={email}
-        id='email'
-        name='email'
-        type='email'
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <button type='submit'>Send Code</button>
+      <div>
+        <label id='email'>Email:</label>
+        <input
+          value={email}
+          id='email'
+          name='email'
+          type='email'
+          onChange={(e) => setEmail(e.target.value)}
+        />
+      </div>
+      <div>
+        <label className='block text-sm mt-8' htmlFor='password'>
+          Password
+        </label>
+        <input
+          id='password'
+          type='password'
+          name='password'
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+      </div>
+      <div>
+        <button type='submit'>Send Code</button>
+      </div>
     </form>
   );
 }

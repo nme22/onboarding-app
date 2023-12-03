@@ -2,111 +2,73 @@
 
 import * as React from 'react';
 import { useSignIn } from '@clerk/nextjs';
-import { EmailCodeFactor, SignInFirstFactor } from '@clerk/types';
 import { useRouter } from 'next/navigation';
 
-export default function Page() {
+export default function SignInForm() {
   const { isLoaded, signIn, setActive } = useSignIn();
-  const [verifying, setVerifying] = React.useState(false);
   const [email, setEmail] = React.useState('');
-  const [code, setCode] = React.useState('');
+  const [password, setPassword] = React.useState('');
   const router = useRouter();
 
-  async function handleSubmit(e: React.FormEvent) {
+  // Handle the submission of the sign-in form
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!isLoaded && !signIn) return null;
-
-    try {
-      // Start the Sign Up process using the phone number method
-      const { supportedFirstFactors } = await signIn.create({
-        identifier: email,
-      });
-
-      // Filter the returned array to find the 'phone_code' entry
-      const isEmailCodeFactor = (
-        factor: SignInFirstFactor
-      ): factor is EmailCodeFactor => {
-        return factor.strategy === 'email_code';
-      };
-      const emailCodeFactor = supportedFirstFactors?.find(isEmailCodeFactor);
-
-      if (emailCodeFactor) {
-        // Grab the emailAddressId
-        const { emailAddressId } = emailCodeFactor;
-
-        // Send the OTP code to the user
-        await signIn.prepareFirstFactor({
-          strategy: 'email_code',
-          emailAddressId,
-        });
-
-        // Set 'verifying' true to display second form and capture the OTP code
-        setVerifying(true);
-      }
-    } catch (err) {
-      // See https://clerk.com/docs/custom-flows/error-handling for more on error handling
-      console.error('Error:', JSON.stringify(err, null, 2));
+    if (!isLoaded) {
+      return;
     }
-  }
 
-  async function handleVerification(e: React.FormEvent) {
-    e.preventDefault();
-
-    if (!isLoaded && !signIn) return null;
-
+    // Start the sign-in process using the email and password provided
     try {
-      // Use the code provided by the user and attempt verification
-      const completeSignIn = await signIn.attemptFirstFactor({
-        strategy: 'email_code',
-        code,
+      const completeSignIn = await signIn.create({
+        identifier: email,
+        password,
       });
 
-      // This mainly for debuggin while developing.
-      // Once your Instance is setup this should not be required.
       if (completeSignIn.status !== 'complete') {
-        console.error(JSON.stringify(completeSignIn, null, 2));
+        // The status can also be `needs_factor_on', 'needs_factor_two', or 'needs_identifier'
+        // Please see https://clerk.com/docs/references/react/use-sign-in#result-status for  more information
+        console.log(JSON.stringify(completeSignIn, null, 2));
       }
 
-      // If verification was completed, create a session for the user
       if (completeSignIn.status === 'complete') {
+        // If complete, user exists and provided password match -- set session active
         await setActive({ session: completeSignIn.createdSessionId });
-
-        // Redirect user
+        // Redirect the user to a post sign-in route
         router.push('/dashboard');
       }
-    } catch (err) {
-      // See https://clerk.com/docs/custom-flows/error-handling for more on error handling
-      console.error('Error:', JSON.stringify(err, null, 2));
+    } catch (err: any) {
+      // This can return an array of errors.
+      // See https://clerk.com/docs/custom-flows/error-handling to learn about error handling
+      console.error(JSON.stringify(err, null, 2));
     }
-  }
+  };
 
-  if (verifying) {
-    return (
-      <form onSubmit={handleVerification}>
-        <label id='code'>Code</label>
-        <input
-          value={code}
-          id='code'
-          name='code'
-          onChange={(e) => setCode(e.target.value)}
-        />
-        <button type='submit'>Verify</button>
-      </form>
-    );
-  }
-
+  // Display a form to capture the user's email and password
   return (
-    <form onSubmit={handleSubmit}>
-      <label id='email'>email</label>
-      <input
-        value={email}
-        id='email'
-        name='email'
-        type='tel'
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <button type='submit'>Send Code</button>
-    </form>
+    <div>
+      <form onSubmit={(e) => handleSubmit(e)}>
+        <div>
+          <label htmlFor='email'>Email</label>
+          <input
+            onChange={(e) => setEmail(e.target.value)}
+            id='email'
+            name='email'
+            type='email'
+            value={email}
+          />
+        </div>
+        <div>
+          <label htmlFor='password'>Password</label>
+          <input
+            onChange={(e) => setPassword(e.target.value)}
+            id='password'
+            name='password'
+            type='password'
+            value={password}
+          />
+        </div>
+        <button type='submit'>Sign In</button>
+      </form>
+    </div>
   );
 }
