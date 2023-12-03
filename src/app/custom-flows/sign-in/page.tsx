@@ -9,6 +9,7 @@ export default function SignInForm() {
   const { isLoaded, signIn, setActive } = useSignIn();
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
+  const [code, setCode] = React.useState('');
   const router = useRouter();
 
   // Handle the submission of the sign-in form
@@ -22,7 +23,7 @@ export default function SignInForm() {
     try {
       const completeSignIn = await signIn.create({
         identifier: email,
-        password,
+        password: password,
       });
 
       if (completeSignIn.status !== 'complete') {
