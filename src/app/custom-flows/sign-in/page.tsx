@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import Link from 'next/link';
 import { useSignIn } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 
@@ -67,7 +68,12 @@ export default function SignInForm() {
             value={password}
           />
         </div>
-        <button type='submit'>Sign In</button>
+        <div>
+          <button type='submit'>Sign In</button>
+        </div>
+        <div>
+          <Link href='/custom-flows/forgot'>Forgot Password?</Link>
+        </div>
       </form>
     </div>
   );
