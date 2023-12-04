@@ -14,28 +14,33 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const localization = {
+    formButtonPrimary: 'Sign Up!',
+    socialButtonsBlockButton: '{{provider|titleize}}',
+    dividerText: 'Or',
     signUp: {
       start: {
-        title: 'Sign Up',
+        title: 'Sign Up.',
         subtitle: 'to continue to this same app named as something else!',
         actionText: 'New User?',
-        actionLink: `Don't have an account?`,
+        actionLink: `Already have an account?`,
       },
     },
   };
-  const appearance = {
-    layout: {
-      socialButtonsPlacement: 'bottom',
-      socialButtonsVariant: 'iconButton',
-      termsPageUrl: 'https://clerk.com/terms',
-      privacyPageUrl: 'https://clerk.com/privacy',
-      showOptionalFields: 'true',
-      helpPageUrl: 'https://clerk.com/help',
-    },
-  };
   return (
-    <ClerkProvider localization={localization} appearance={appearance}>
-      <html lang='en'>
+    <ClerkProvider
+      localization={localization}
+      appearance={{
+        layout: {
+          showOptionalFields: true,
+          socialButtonsPlacement: 'bottom',
+          socialButtonsVariant: 'blockButton',
+          termsPageUrl: 'https://clerk.com/terms',
+          privacyPageUrl: 'https://clerk.com/privacy',
+          helpPageUrl: 'https://clerk.com/help',
+        },
+      }}
+    >
+      <html>
         <body>
           <Navbar />
           <main>{children}</main>
